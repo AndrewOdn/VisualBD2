@@ -113,10 +113,42 @@ external_stylesheets = [
         "rel": "stylesheet",
     },
 ]
+id = ['25454', '26942']
+Markets = ['Детский мир', 'Wildberries']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = "Avocado Analytics: Understand Your Avocados!"
 app.layout = html.Div(
     children=[
+        html.Div(
+            children=[
+                html.Div(children="Артикул", className="menu-title"),
+                dcc.Dropdown(
+                    id="id",
+                    options=[
+                        {"label": Id, "value": Id}
+                        for Id in id
+                    ],
+                    value='25454',
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(children="Маркет-плейс", className="menu-title"),
+                dcc.Dropdown(
+                    id="market",
+                    options=[
+                        {"label": market, "value": market}
+                        for market in Markets
+                    ],
+                    value='Детский мир',
+                    clearable=False,
+                    className="dropdown",
+                ),
+            ]
+        ),
         html.Div(
             children=[
                 html.P(children="🥑", className="header-title"),
@@ -136,31 +168,7 @@ app.layout = html.Div(
                 html.Div(
                     children = dcc.Graph(
                         id="price-chart",
-                        config={"displayModeBar": False},
-                        figure={
-                            "data": [
-                                {
-                                    "x": date1,
-                                    "y": data["Price"],
-                                    "type": "markers+lines",
-                                    "hovertemplate": "₽%{y:.2f}"
-                                                     "<extra></extra>",
-                                },
-                            ],
-                            "layout": {
-                                "title": {
-                                    "text": "Price graph by 25454 id",
-                                    "x": 0.05,
-                                    "xanchor": "left",
-                                },
-                                "xaxis": {"fixedrange": True},
-                                "yaxis": {
-                                    "tickprefix": "₽",
-                                    "fixedrange": True,
-                                },
-                                "colorway": ["#17B897"],
-                            },
-                        },
+                        config={"displayModeBar": False}
                     ),
                     className="card",
                 ),
@@ -168,25 +176,13 @@ app.layout = html.Div(
                     children=dcc.Graph(
                         id="volume-chart",
                         config={"displayModeBar": False},
-                        figure={
-                            "data": [
-                                {
-                                    "x": date1,
-                                    "y": data["Popular"],
-                                    "type": "markers+lines",
-                                },
-                            ],
-                            "layout": {
-                                "title": {
-                                    "text": "Popular graph by 25454 id",
-                                    "x": 0.05,
-                                    "xanchor": "left",
-                                },
-                                "xaxis": {"fixedrange": True},
-                                "yaxis": {"fixedrange": True},
-                                "colorway": ["#E12D39"],
-                            },
-                        },
+                    ),
+                    className="card",
+                ),
+                html.Div(
+                    children=dcc.Graph(
+                        id="rating-chart",
+                        config={"displayModeBar": False},
                     ),
                     className="card",
                 ),
@@ -195,6 +191,75 @@ app.layout = html.Div(
         ),
     ]
 )
-
-if __name__ == "__main__":
-    app.run_server(debug=True)
+@app.callback(
+    [Output("price-chart", "figure"), Output("volume-chart", "figure"), Output("rating-chart", "figure")],
+    [Input("id", "value"), Input("market", "value"),])
+def display_time_series(id, market):
+    if id == '26942':
+        data = pd.read_csv(r"C:\Users\ElenaKulikova\Desktop\gate.csv", parse_dates=['Date'], sep=';')
+    elif id == '25454':
+        data = pd.read_csv(r"C:\Users\ElenaKulikova\Desktop\date.csv", parse_dates=['Date'], sep=';')
+    price_chart_figure = {
+        "data": [
+            {
+                "x": date1,
+                "y": data["Price"],
+                "type": "markers+lines",
+                "hovertemplate": "₽%{y:.2f}"
+                                 "<extra></extra>",
+            },
+        ],
+        "layout": {
+            "title": {
+                "text": "Price graph by "+str(id)+" id",
+                "x": 0.05,
+                "xanchor": "left",
+            },
+            "xaxis": {"fixedrange": True},
+            "yaxis": {
+                "tickprefix": "₽",
+                "fixedrange": True,
+            },
+            "colorway": ["#17B897"],
+        },
+    }
+    volume_chart_figure = {
+        "data": [
+            {
+                "x": date1,
+                "y": data["Popular"],
+                "type": "markers+lines",
+            },
+        ],
+        "layout": {
+            "title": {
+                "text": "Popular graph by "+str(id)+" id",
+                "x": 0.05,
+                "xanchor": "left",
+            },
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"fixedrange": True},
+            "colorway": ["#E12D39"],
+        },
+    }
+    rating_chart_figure = {
+        "data": [
+            {
+                "x": date1,
+                "y": data["Rating"],
+                "type": "markers+lines",
+            },
+        ],
+        "layout": {
+            "title": {
+                "text": "Rating graph by "+str(id)+" id",
+                "x": 0.05,
+                "xanchor": "left",
+            },
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"fixedrange": True},
+            "colorway": ["#FF9966"],
+        },
+    }
+    return price_chart_figure, volume_chart_figure, rating_chart_figure
+app.run_server(debug=True)
