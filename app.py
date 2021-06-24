@@ -270,4 +270,6 @@ def display_time_series(id, market):
         },
     }
     return price_chart_figure, volume_chart_figure, rating_chart_figure
-app.run_server(debug=True)
+if __name__ == "__main__":
+    app.run_server(debug=True,
+                   host='127.0.0.1')
