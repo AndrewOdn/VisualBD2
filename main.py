@@ -1,6 +1,5 @@
 import datetime
 
-import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -104,7 +103,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-data = pd.read_csv(r"C:\Users\ElenaKulikova\Desktop\date.csv", parse_dates=['Date'], sep=';')
+data = pd.read_csv("date.csv", parse_dates=['Date'], sep=';')
 app = dash.Dash(__name__)
 external_stylesheets = [
     {
@@ -116,57 +115,66 @@ external_stylesheets = [
 id = ['25454', '26942']
 Markets = ['Детский мир', 'Wildberries']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.title = "Avocado Analytics: Understand Your Avocados!"
+server = app.server
+app.title = "Airis-Press Analytics"
 app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.Div(children="Артикул", className="menu-title"),
-                dcc.Dropdown(
-                    id="id",
-                    options=[
-                        {"label": Id, "value": Id}
-                        for Id in id
+                html.Div(
+                    children=[
+                        html.P(children="🧙🏿", className="header-title"),
+                        html.H1(
+                            children="Airis-press Аналитика", className="header-title"
+                        ),
+                        html.P(
+                            children="Графики цены/популярности/рейтинга позиции от времени по маркет-плейсу",
+                            className="header-description",
+                        ),
                     ],
-                    value='25454',
-                    clearable=False,
-                    className="dropdown",
+                    className="header",
                 ),
             ]
-        ),
-        html.Div(
-            children=[
-                html.Div(children="Маркет-плейс", className="menu-title"),
-                dcc.Dropdown(
-                    id="market",
-                    options=[
-                        {"label": market, "value": market}
-                        for market in Markets
-                    ],
-                    value='Детский мир',
-                    clearable=False,
-                    className="dropdown",
-                ),
-            ]
-        ),
-        html.Div(
-            children=[
-                html.P(children="🥑", className="header-title"),
-                html.H1(
-                    children="AIRIS-PRESS Analytics", className="header-title"
-                ),
-                html.P(
-                    children="Analyze the behavior of AIRIS-PRESS prices"
-                    " between FEB and JUN",
-                    className="header-description",
-                ),
-            ],
-            className="header",
         ),
         html.Div(
             children=[
                 html.Div(
-                    children = dcc.Graph(
+                    children=[
+                        html.Div(children="Артикул", className="menu-title"),
+                        dcc.Dropdown(
+                            id="id",
+                            options=[
+                                {"label": Id, "value": Id}
+                                for Id in id
+                            ],
+                            value='25454',
+                            clearable=False,
+                            className="dropdown",
+                        ),
+                    ]
+                ),
+                html.Div(
+                    children=[
+                        html.Div(children="Маркет-плейс", className="menu-title"),
+                        dcc.Dropdown(
+                            id="market",
+                            options=[
+                                {"label": market, "value": market}
+                                for market in Markets
+                            ],
+                            value='Детский мир',
+                            clearable=False,
+                            className="dropdown",
+                        ),
+                    ]
+                ),
+            ],
+            className="menu",
+        ),
+        html.Div(
+            children=[
+                html.Div(
+                    children=dcc.Graph(
                         id="price-chart",
                         config={"displayModeBar": False}
                     ),
@@ -196,9 +204,9 @@ app.layout = html.Div(
     [Input("id", "value"), Input("market", "value"),])
 def display_time_series(id, market):
     if id == '26942':
-        data = pd.read_csv(r"C:\Users\ElenaKulikova\Desktop\gate.csv", parse_dates=['Date'], sep=';')
+        data = pd.read_csv("gate.csv", parse_dates=['Date'], sep=';')
     elif id == '25454':
-        data = pd.read_csv(r"C:\Users\ElenaKulikova\Desktop\date.csv", parse_dates=['Date'], sep=';')
+        data = pd.read_csv("date.csv", parse_dates=['Date'], sep=';')
     price_chart_figure = {
         "data": [
             {
@@ -211,7 +219,7 @@ def display_time_series(id, market):
         ],
         "layout": {
             "title": {
-                "text": "Price graph by "+str(id)+" id",
+                "text": "График цены от времени",
                 "x": 0.05,
                 "xanchor": "left",
             },
@@ -233,7 +241,7 @@ def display_time_series(id, market):
         ],
         "layout": {
             "title": {
-                "text": "Popular graph by "+str(id)+" id",
+                "text": "График популярнсти от времени",
                 "x": 0.05,
                 "xanchor": "left",
             },
@@ -252,7 +260,7 @@ def display_time_series(id, market):
         ],
         "layout": {
             "title": {
-                "text": "Rating graph by "+str(id)+" id",
+                "text": "График рейтинга от времени",
                 "x": 0.05,
                 "xanchor": "left",
             },
